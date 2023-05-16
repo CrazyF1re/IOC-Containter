@@ -2,53 +2,59 @@
 #define COMPUTER_H
 
 #include <iostream>
-enum ProcessorType
-{ x86,
-   x64
-};
+#include <iprocessor.h>
+#include <ioccontainer.h>
 
-class IProcessor
+
+
+class IntelProcessor:public IProcessor
 {
-
-};
-
-class IntelProcessor
-{
-    std::string Version;
-    ProcessorType Type;
-    double Speed;
 public:
-    IntelProcessor(ProcessorType Type);//different constructors
-    IntelProcessor(double speed,ProcessorType Type,std::string version);
-    void get_Info();
-    void setType(ProcessorType);
-    void setVersion(std::string version);
-    void setSpeed(double speed);
+    IntelProcessor(){}
+    IntelProcessor(std::string version, ProcessorType type, double speed):IProcessor(version,type,speed)
+    {
+
+    }
 };
 
-
-class AMDProcessor
+class AMDProcessor:public IProcessor
 {
-    std::string Version;
-    ProcessorType Type;
-    double Speed;
 public:
-    AMDProcessor(ProcessorType Type);//different constructors
-    AMDProcessor(double speed,ProcessorType Type,std::string version);
-    void get_Info();
-    void setType(ProcessorType);
-    void setVersion(std::string version);
-    void setSpeed(double speed);
+    AMDProcessor(){}
+    AMDProcessor(std::string version, ProcessorType type, double speed):IProcessor(version,type,speed)
+    {
+
+    }
 };
+
 
 class Computer
 {
+    IOCContainer injector;
 public:
-    IntelProcessor* GetProcessor(double speed, ProcessorType type, std::string version)
+    Computer(){}
+    void SetProc(std::string version, ProcessorType type, double speed)
     {
-       return new IntelProcessor(speed, type, version);
+        if (version == "AMD")
+        {
+            injector.RegisterInstance<IProcessor,AMDProcessor>();
+        }
+        else if (version == "Intel")
+        {
+            injector.RegisterInstance<IProcessor,IntelProcessor>();
+        }
+        injector.GetObject<IProcessor>()->SetProcessor(version, type,  speed);
     }
+    void Info()
+    {
+        injector.GetObject<IProcessor>()->GetInfo();
+    }
+
 };
+
+
+
+
 
 
 
