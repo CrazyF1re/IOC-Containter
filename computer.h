@@ -3,51 +3,33 @@
 
 #include <iostream>
 #include <iprocessor.h>
-#include <ioccontainer.h>
 
 
 
 class IntelProcessor:public IProcessor
 {
-public:
-    IntelProcessor(){}
-    IntelProcessor(std::string version, ProcessorType type, double speed):IProcessor(version,type,speed)
-    {
-
-    }
 };
 
 class AMDProcessor:public IProcessor
 {
-public:
-    AMDProcessor(){}
-    AMDProcessor(std::string version, ProcessorType type, double speed):IProcessor(version,type,speed)
-    {
-
-    }
 };
 
 
 class Computer
 {
-    IOCContainer injector;
+    IProcessor* Processor;// processor as attribute
 public:
-    Computer(){}
-    void SetProc(std::string version, ProcessorType type, double speed)
+    Computer(IProcessor* proc)//constructor with IProcessor as argument
     {
-        if (version == "AMD")
-        {
-            injector.RegisterInstance<IProcessor,AMDProcessor>();
-        }
-        else if (version == "Intel")
-        {
-            injector.RegisterInstance<IProcessor,IntelProcessor>();
-        }
-        injector.GetObject<IProcessor>()->SetProcessor(version, type,  speed);
+        Processor = proc;
     }
-    void Info()
+    void SetProc(IProcessor* proc)// Set processor
     {
-        injector.GetObject<IProcessor>()->GetInfo();
+        Processor = proc;
+    }
+    void Info()// Output info about processor
+    {
+        Processor->GetInfo();
     }
 
 };

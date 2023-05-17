@@ -1,6 +1,8 @@
 #include <QCoreApplication>
 
 #include "computer.h"
+#include "ioccontainer.h"
+
 int IOCContainer::s_nextTypeId = 115094801;
 
 int main(int argc, char *argv[])
@@ -8,11 +10,23 @@ int main(int argc, char *argv[])
     QCoreApplication a(argc, argv);
 
 
-    Computer testComputer;
-    testComputer.SetProc("AMD",ProcessorType::x64,50);
-    testComputer.Info();
-    testComputer.SetProc("Intel",ProcessorType::x86,2600);
-    testComputer.Info();
-//std::string version, ProcessorType type, double speed
+    IOCContainer injector;//add IOC container
 
+    injector.RegisterInstance<IProcessor,AMDProcessor>();// add object of AMDProcessor Class
+
+    injector.GetObject<IProcessor>()->SetProcessor("AMD",ProcessorType::x64,5000);//initialization processor
+
+//TEST_1
+    Computer testComputer(injector.GetObject<IProcessor>().get());//create computer by created processor
+
+    testComputer.Info();// get info about processor
+
+//TEST_2
+    injector.RegisterInstance<IProcessor,IntelProcessor>();
+
+    injector.GetObject<IProcessor>()->SetProcessor("Intel", ProcessorType::x86,3222);
+
+    Computer cmp(injector.GetObject<IProcessor>().get());
+
+    cmp.Info();
 }
